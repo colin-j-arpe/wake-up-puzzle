@@ -1,12 +1,18 @@
 const MIN = 1;
 const MAX = 9;
-const LIGHTER = 0.25;
+const LIGHTER = 0.33;
+const BLINK = 200;
+
 $(document).ready(() => {
+    startGame();
+});
+
+function startGame()    {
     let boxArray = [];
     fillBoard(boxArray);
     sortArray(boxArray);
     listenToBoard($('.gameboard'), boxArray);
-});
+}
 
 function listenToBoard($board, arr)  {
     let count = 0;
@@ -16,8 +22,10 @@ function listenToBoard($board, arr)  {
             $(thisCell).css("opacity", 1);
             count++;
         }   else    {
-            $(thisCell).css("background-color", "#000");
-            $('.gameboard__text', thisCell).css("color", "black");
+            loseGame($board, thisCell);
+        }
+        if (count == 4) {
+            winGame($board);
         }
     })
 }
@@ -43,10 +51,11 @@ function fillBoard(arr) {
             thisNum = numArray.pop();
         }
 
-        $(box).text(thisNum);
+        $(box).css("color", "white").text(thisNum);
 
         let $cell = $(box).closest('.gameboard__cell');
         $cell.css("background-color", makeColor(thisNum));
+        $cell.css("opacity", 0.7);
 
         arr[i] = [];
         arr[i]["value"] = thisNum;
@@ -57,8 +66,33 @@ function fillBoard(arr) {
 function makeColor(x)   {
     let colorArray = [];
     colorArray[x % 3] = (((x / (MAX * 2)) / 2) + LIGHTER) * 255;
-    colorArray[(x + 1) % 3] = (x / (MAX * 2)) * 255;
+    colorArray[(x + 1) % 3] = ((x / (MAX * 2)) + (LIGHTER / 2)) * 255;
     colorArray[(x + 2) % 3] = ((x / (MAX * 2)) * 2)   * 255;
 
     return "rgb(" + colorArray[0] + ", " + colorArray[1] + ", " + colorArray[2] + ")";
 };
+
+function winGame($board)    {
+    $('.gameboard__cell', $board).off();
+    let count = 0;
+    stopBlinking = setInterval(() => {
+        $('.gameboard__cell', $board).each((i, cell) => {
+            let thisOpacity = $(cell).css("opacity");
+            thisOpacity = 1 - ((((thisOpacity * 10) + 5) % 10) / 10);
+            $(cell).css("opacity", thisOpacity);
+            if (++count == 24) {
+                clearInterval(stopBlinking);
+                startGame();
+            }
+        });
+    }, BLINK);
+}
+
+function loseGame($board, cell) {
+    $('.gameboard__cell', $board).off();
+    $(cell).css("background-color", "#000");
+    $('.gameboard__text', cell).css("color", "black");
+    setTimeout(() => {
+        startGame();
+    }, 1500);
+}

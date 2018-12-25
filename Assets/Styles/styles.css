@@ -17,7 +17,7 @@ body    {
 
 .gameboard__cell    {
     padding: 0;
-    opacity: 0.7
+    /*opacity: 0.7*/
     /*border: 2px solid darkblue;*/
 }
 
