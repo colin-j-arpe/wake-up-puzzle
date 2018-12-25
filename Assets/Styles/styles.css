@@ -1,0 +1,16 @@
+.gameboard  {
+    width: 600px;
+    height: 600px;
+    margin: auto;
+    border-collapse: collapse;
+}
+
+.gameboard__row {
+    width: 50%;
+    height: 50%;
+}
+
+.gameboard__cell    {
+    padding: 0;
+    border: 2px solid darkblue;
+}
