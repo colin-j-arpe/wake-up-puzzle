@@ -1,7 +1,9 @@
 const MIN = 1;
 const MAX = 9;
-const LIGHTER = 0.33;
+const LIGHTER = 0.5;
 const BLINK = 200;
+
+let eventType;
 
 $(document).ready(() => {
     startGame();
@@ -11,12 +13,25 @@ function startGame()    {
     let boxArray = [];
     fillBoard(boxArray);
     sortArray(boxArray);
-    listenToBoard($('.gameboard'), boxArray);
+    if (eventType == undefined) {
+        getScreen($('.gameboard'), boxArray)
+    }   else    {
+        listenToBoard($('.gameboard'), boxArray, eventType);
+    }
 }
 
-function listenToBoard($board, arr)  {
+function getScreen($board, arr)    {
+    $board.on('click touchstart', (e) => {
+        $board.off();
+        eventType = e.type;
+        listenToBoard($board, arr, e.type)
+        $(e.target).trigger(eventType);
+    });
+}
+
+function listenToBoard($board, arr, event)  {
     let count = 0;
-    $('.gameboard__cell', $board).on('click', (e) => {
+    $('.gameboard__cell', $board).on(event, (e) => {
         let thisCell = e.currentTarget;
         if (thisCell == arr[count]["cell"][0]) {
             $(thisCell).css("opacity", 1);
